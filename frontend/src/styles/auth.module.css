@@ -1,0 +1,342 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap");
+
+:global(*) {
+  box-sizing: border-box;
+}
+
+:global(body) {
+  margin: 0;
+  font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic",
+    sans-serif;
+  color: #111111;
+  background: linear-gradient(180deg, #f5f5f5 0%, #f1f1f1 100%);
+}
+
+:global(#root) {
+  min-height: 100vh;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+}
+
+.panel {
+  width: min(960px, 100%);
+  background: #ffffff;
+  border: 1px solid #ededed;
+  border-radius: 6px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 48px;
+  padding: 60px 64px;
+}
+
+.brandPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 18px;
+}
+
+.brandText {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.4px;
+}
+
+.brandText span {
+  display: block;
+}
+
+.brandTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #222222;
+}
+
+.formPanel {
+  display: flex;
+  align-items: center;
+}
+
+.placeholderPanel {
+  justify-content: center;
+}
+
+.placeholderText {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.statusBadge {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #e0e0e0;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  color: #444444;
+  z-index: 10;
+}
+
+.roleList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.roleIntro {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 6px;
+}
+
+.roleButton {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 6px;
+  border: 1px solid #dedede;
+  background: #f7f7f7;
+  text-decoration: none;
+  color: #222222;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.roleButton:hover {
+  background: #efefef;
+  border-color: #cfcfcf;
+}
+
+.roleTitle {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.roleDesc {
+  font-size: 12px;
+  color: #666666;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inputAction {
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d6d6d6;
+  border-radius: 4px;
+  background: #ffffff;
+  font-size: 14px;
+  color: #222222;
+}
+
+.input::placeholder {
+  color: #b7b7b7;
+}
+
+.select {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid #d6d6d6;
+  border-radius: 4px;
+  background: #ffffff;
+  font-size: 14px;
+  color: #222222;
+}
+
+.primaryButton {
+  margin-top: 6px;
+  width: 100%;
+  height: 44px;
+  border: none;
+  border-radius: 4px;
+  background: #cfcfcf;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryButton:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  height: 40px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 4px;
+  background: #d9d9d9;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.secondaryButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.helperText {
+  margin-top: 4px;
+  font-size: 12px;
+  text-align: center;
+  color: #666666;
+}
+
+.link {
+  color: #444444;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #444444;
+}
+
+.checkboxLabel input {
+  width: 14px;
+  height: 14px;
+}
+
+.message {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.messageError {
+  color: #d64545;
+}
+
+.messageSuccess {
+  color: #2f9e44;
+}
+
+.messageInfo {
+  color: #666666;
+}
+
+.passwordPolicy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.passwordPolicyMessage {
+  font-size: 12px;
+  color: #666666;
+}
+
+.passwordPolicyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 12px;
+  font-size: 12px;
+}
+
+.passwordPolicyItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #8a8a8a;
+}
+
+.passwordPolicyItemOk {
+  color: #2f9e44;
+}
+
+.passwordPolicyIcon {
+  width: 14px;
+  display: inline-flex;
+  justify-content: center;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .panel {
+    grid-template-columns: 1fr;
+    padding: 48px 40px;
+    gap: 32px;
+  }
+
+  .brandPanel {
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+@media (max-width: 600px) {
+  .panel {
+    padding: 40px 28px;
+  }
+
+  .brandText {
+    font-size: 34px;
+  }
+}
