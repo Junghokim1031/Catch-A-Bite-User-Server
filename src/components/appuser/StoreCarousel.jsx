@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom'; // [ADDED] For navigation
+import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, FreeMode } from 'swiper/modules'; // Added FreeMode just in case
+import { Navigation, Pagination, FreeMode } from 'swiper/modules';
 import { HiStar } from 'react-icons/hi';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -65,6 +65,7 @@ const StoreCarousel = ({ title, stores, pages = 4.2, limit = 10 }) => {
       <Swiper
         modules={[Navigation, Pagination, FreeMode]}
         spaceBetween={16}
+        loop={true}
         slidesPerView={pages}
         navigation
         pagination={{ clickable: true }}
@@ -88,7 +89,6 @@ const StoreCarousel = ({ title, stores, pages = 4.2, limit = 10 }) => {
                 }
               >
                 {store.storeImageUrl ? (
-                  // [ADDED] Real Image
                   <img 
                     src={store.storeImageUrl} 
                     alt={store.storeName} 

@@ -1,13 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getMe } from "../../services/authService";
-import {
-  createAddress,
-  deleteAddress,
-  getMyAddresses,
-  setDefault,
-  updateAddress,
-} from "../../services/addressService";
+import { getMe } from "../../services/authService"; // Keep this if authService hasn't moved, otherwise update
+import { addressService } from "../../api/appuser/AddressService";
 import styles from "../../styles/mypage.module.css";
 
 const emptyForm = {
@@ -29,9 +23,8 @@ export default function AddressListPage() {
 
   const fetchAddresses = async () => {
     try {
-      // API: GET /api/v1/addresses/me
-      const response = await getMyAddresses();
-      const data = response.data?.data || response.data || [];
+      const payload = await addressService.readAddress("me"); 
+      const data = payload.data || payload || []; 
       setAddresses(Array.isArray(data) ? data : []);
     } catch (error) {
       setStatus(error?.message || "주소 정보를 불러오지 못했습니다.");
@@ -43,7 +36,6 @@ export default function AddressListPage() {
 
     const ensureAuthAndFetch = async () => {
       try {
-        // API: GET /api/v1/auth/me
         await getMe();
         if (active) {
           await fetchAddresses();
@@ -91,15 +83,14 @@ export default function AddressListPage() {
       addressNickname: form.addressNickname.trim() || null,
       addressEntranceMethod: form.addressEntranceMethod.trim() || null,
       isDefault: form.isDefault,
+      appUserId: 1 // [NOTE] Ensure you pass the correct User ID if required by your API
     };
 
     try {
       if (isEditing) {
-        // API: PATCH /api/v1/addresses/{id}
-        await updateAddress(editingId, payload);
+        await addressService.updateAddress(editingId, payload);
       } else {
-        // API: POST /api/v1/addresses
-        await createAddress(payload);
+        await addressService.createAddress(payload);
       }
       await fetchAddresses();
       resetForm();
@@ -121,8 +112,7 @@ export default function AddressListPage() {
   const handleDelete = async (addressId) => {
     setStatus(null);
     try {
-      // API: DELETE /api/v1/addresses/{id}
-      await deleteAddress(addressId);
+      await addressService.deleteAddress(addressId);
       await fetchAddresses();
     } catch (error) {
       setStatus(error?.message || "삭제에 실패했습니다.");
@@ -132,8 +122,10 @@ export default function AddressListPage() {
   const handleSetDefault = async (addressId) => {
     setStatus(null);
     try {
-      // API: POST /api/v1/addresses/{id}/default
-      await setDefault(addressId);
+      const target = addresses.find(a => a.addressId === addressId);
+      if(target) {
+         await addressService.updateAddress(addressId, { ...target, isDefault: true });
+      }
       await fetchAddresses();
     } catch (error) {
       setStatus(error?.message || "기본주소 설정에 실패했습니다.");

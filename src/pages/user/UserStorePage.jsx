@@ -1,23 +1,33 @@
-/* src/pages/user/UserStorePage.jsx */
+// React 및 Hooks
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { HiStar, HiOutlineClock, HiOutlineShoppingBag, HiHeart, HiOutlineHeart } from "react-icons/hi";
+
+// 아이콘
+import { HiStar, HiOutlineClock, HiHeart, HiOutlineHeart } from "react-icons/hi";
+
+// API 서비스
 import { appUserStoreService } from "../../api/appuser/StoreService";
-import { appUserFavoriteService } from "../../api/appuser/FavoriteService"; // Import FavoriteService
+import { appUserFavoriteService } from "../../api/appuser/FavoriteService";
+
+// 스타일 및 컴포넌트
 import "./UserStorePage.css";
+import MenuCard from "../../components/appuser/MenuCard"; // [변경] 새로 만든 메뉴 카드 임포트
 
 export default function UserStorePage() {
   const { storeId } = useParams();
   const navigate = useNavigate();
   
+  // 상태 관리
   const [store, setStore] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(0); 
-  const [favoriteId, setFavoriteId] = useState(null); // Changed boolean to favoriteId (ID or null)
+  const [favoriteId, setFavoriteId] = useState(null);
 
+  // 스크롤 처리를 위한 Ref
   const categoryRefs = useRef([]);
   const tabsContainerRef = useRef(null);
 
+  // --- 데이터 로드 및 이벤트 리스너 등록 ---
   useEffect(() => {
     loadStoreData();
     window.addEventListener("scroll", handleScroll);
@@ -28,7 +38,6 @@ export default function UserStorePage() {
     try {
       const data = await appUserStoreService.getStoreDetails(storeId);
       setStore(data);
-      // Backend now returns 'favoriteId' if it is a favorite, else null
       setFavoriteId(data.favoriteId);
     } catch (error) {
       console.error("Store Load Error:", error);
@@ -37,9 +46,10 @@ export default function UserStorePage() {
     }
   };
 
+  // --- 스크롤 핸들링 (탭 활성화) ---
   const handleScroll = () => {
     if (!categoryRefs.current.length) return;
-    const scrollPosition = window.scrollY + 150; 
+    const scrollPosition = window.scrollY + 180; 
     categoryRefs.current.forEach((ref, index) => {
       if (ref && ref.offsetTop <= scrollPosition && (ref.offsetTop + ref.offsetHeight) > scrollPosition) {
         setActiveTab(index);
@@ -51,21 +61,19 @@ export default function UserStorePage() {
     setActiveTab(index);
     const ref = categoryRefs.current[index];
     if (ref) {
-      const y = ref.getBoundingClientRect().top + window.scrollY - 110; 
+      const y = ref.getBoundingClientRect().top + window.scrollY - 120; 
       window.scrollTo({ top: y, behavior: "smooth" });
     }
   };
 
+  // --- 즐겨찾기 토글 ---
   const toggleFavorite = async (e) => {
     e.stopPropagation();
-    
     try {
       if (favoriteId) {
-        // Remove Favorite
         await appUserFavoriteService.removeFavorite(favoriteId);
         setFavoriteId(null);
       } else {
-        // Add Favorite
         const result = await appUserFavoriteService.addFavorite(storeId);
         if (result && result.favoriteId) {
           setFavoriteId(result.favoriteId);
@@ -73,7 +81,6 @@ export default function UserStorePage() {
       }
     } catch (err) {
       console.error("Failed to toggle favorite:", err);
-      // Optional: Show toast message here
     }
   };
 
@@ -81,15 +88,18 @@ export default function UserStorePage() {
   if (!store) return <div className="error-screen">가게 정보를 찾을 수 없습니다.</div>;
 
   return (
-    <div className="store-page pb-24">
+    <div className="store-page">
       
-      {/* --- 1. Header Image Area --- */}
+      {/* --- 1. 헤더 이미지 영역 --- */}
       <header className="store-header">
         <div className="header-overlay">
             <div className="header-actions">
                 <button className="icon-btn" onClick={toggleFavorite}>
-                    {/* Render solid heart if favoriteId exists, else outline */}
-                    {favoriteId ? <HiHeart className="text-red-500" size={24}/> : <HiOutlineHeart size={24}/>}
+                    {favoriteId ? (
+                        <HiHeart size={24} style={{ color: '#ef4444' }} /> 
+                    ) : (
+                        <HiOutlineHeart size={24} />
+                    )}
                 </button>
             </div>
         </div>
@@ -100,7 +110,7 @@ export default function UserStorePage() {
         )}
       </header>
 
-      {/* --- 2. Store Info Card --- */}
+      {/* --- 2. 가게 정보 섹션 --- */}
       <section className="store-info-section">
         <h1 className="store-name">{store.storeName}</h1>
         
@@ -131,7 +141,7 @@ export default function UserStorePage() {
         </div>
       </section>
 
-      {/* --- 3. Sticky Category Tabs --- */}
+      {/* --- 3. 카테고리 탭 (Sticky) --- */}
       <div className="sticky-tabs-container" ref={tabsContainerRef}>
         {store.menuCategories?.map((cat, index) => (
           <button 
@@ -144,7 +154,7 @@ export default function UserStorePage() {
         ))}
       </div>
 
-      {/* --- 4. Menu Lists --- */}
+      {/* --- 4. 메뉴 리스트 영역 --- */}
       <div className="menu-sections">
         {store.menuCategories?.map((cat, index) => (
           <div 
@@ -156,35 +166,16 @@ export default function UserStorePage() {
             
             <div className="menu-list">
                 {cat.menus?.map((menu) => (
-                <div 
+                  // [변경] MenuCard 컴포넌트 사용
+                  <MenuCard 
                     key={menu.menuId} 
-                    className={`menu-item ${!menu.menuIsAvailable ? 'sold-out' : ''}`}
-                    onClick={() => menu.menuIsAvailable && navigate(`/user/menu/${menu.menuId}`)}
-                >
-                    <div className="menu-info">
-                        <h4 className="menu-name">
-                            {menu.menuName} 
-                            {!menu.menuIsAvailable && <span className="sold-out-badge">품절</span>}
-                        </h4>
-                        <p className="menu-desc">{menu.menuDescription}</p>
-                        <p className="menu-price">{menu.menuPrice?.toLocaleString()}원</p>
-                    </div>
-                    <div className="menu-thumb"></div> 
-                </div>
+                    menu={menu}
+                    onClick={() => navigate(`/user/menu/${menu.menuId}`)}
+                  />
                 ))}
             </div>
           </div>
         ))}
-      </div>
-
-      {/* --- 5. Floating Action Button (Cart) --- */}
-      <div className="fab-container">
-        <button className="cart-fab" onClick={() => navigate('/user/cart')}>
-            <span className="cart-count-badge">1</span> 
-            <HiOutlineShoppingBag size={20} />
-            <span>장바구니 보기</span>
-            <span className="cart-total">23,000원</span> 
-        </button>
       </div>
     </div>
   );

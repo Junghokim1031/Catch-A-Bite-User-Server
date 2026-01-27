@@ -1,21 +1,28 @@
+// React
 import { useEffect, useState } from 'react';
-import DashboardLayout from "../../components/DashboardLayout.jsx";
+// 로그인
 import useRoleGuard from "../../hooks/useRoleGuard.js";
+// API
 import { appUserStoreService } from "../../api/appuser/StoreService";
+import { appUserStoreOrderService } from "../../api/appuser/StoreOrderService";
+import { appUserFavoriteService } from "../../api/appuser/FavoriteService";
+// CSS
 import './UserMainPage.css';
+// import "../../components/appuser/StoreCarousel.css";
+
 // Carousel 및 관련 스타일
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-// 새로 만든 StoreCarousel 컴포넌트 임포트 (경로 확인 필요)
+// StoreCarousel 
 import StoreCarousel from "../../components/appuser/StoreCarousel.jsx";
+const fallbackUser = { name: "사용자 찾기 실페"};
 
-const fallbackUser = {
-  name: "샘플 사용자",
-};
+//디버깅
+const separator = "===================================";
 
 // --- 더미 데이터 영역 ---
 
@@ -31,47 +38,17 @@ const storeCategory = [
   { id: 9, color: '#E0F2F1', text: '기타' }
 ];
 
-// 즐겨찾기 매장 더미 데이터
-const FAVORITE_STORES = [
-  { storeId: 1, storeName: '버거킹 서울점', storeRating: 4.8, storeDeliveryFee: 0, storeOpenStatus: 'OPEN' },
-  { storeId: 2, storeName: '교촌치킨 강남점', storeRating: 4.9, storeDeliveryFee: 3000, storeOpenStatus: 'OPEN' },
-  { storeId: 3, storeName: '스타벅스 리저브', storeRating: 4.7, storeDeliveryFee: 2000, storeOpenStatus: 'CLOSE' },
-  { storeId: 4, storeName: '써브웨이', storeRating: 4.5, storeDeliveryFee: 1500, storeOpenStatus: 'OPEN' },
-  { storeId: 5, storeName: '도미노피자', storeRating: 4.6, storeDeliveryFee: 0, storeOpenStatus: 'OPEN' },
-];
-
 // 자주 주문한 매장 더미 데이터
-const FREQUENT_STORES = [
-  { storeId: 10, storeName: '김밥천국', storeRating: 4.3, storeDeliveryFee: 1000, storeOpenStatus: 'OPEN' },
-  { storeId: 11, storeName: '맥도날드', storeRating: 4.6, storeDeliveryFee: 2500, storeOpenStatus: 'OPEN' },
-  { storeId: 12, storeName: '공차', storeRating: 4.8, storeDeliveryFee: 0, storeOpenStatus: 'CLOSE' },
-  { storeId: 13, storeName: '배스킨라빈스', storeRating: 4.7, storeDeliveryFee: 2000, storeOpenStatus: 'OPEN' },
-  { storeId: 14, storeName: '엽기떡볶이', storeRating: 4.5, storeDeliveryFee: 3500, storeOpenStatus: 'OPEN' },
-];
 
-// (기존 DashboardLayout용 데이터 - 필요 없다면 삭제 가능)
-const quickActions = [
-  { label: "주문하기", hint: "가까운 맛집 둘러보기" },
-  { label: "즐겨찾기", hint: "자주 찾는 가게 모아보기" },
-  { label: "리뷰 작성", hint: "최근 주문 리뷰 남기기" },
-];
-const summaryCards = [
-  { title: "이번 달 주문", value: "8건", meta: "지난달 대비 +2건" },
-  { title: "보유 포인트", value: "12,500P", meta: "이번 주 +1,200P" },
-];
-const activities = [
-  { title: "치킨플레이스 주문 완료", time: "오늘 10:24", status: "완료" },
-  { title: "카페라떼 주문 접수", time: "어제 19:12", status: "접수" },
-];
-const notices = [
-  { title: "주말 주문 프로모션", detail: "금요일 오후 6시부터 적용됩니다." },
-];
 
 // --- 컴포넌트 시작 ---
 
 export default function UserMainPage() {
   const { user, loading } = useRoleGuard("USER", fallbackUser);
   const [randomStores, setRandomStores] = useState([]);
+  const [favoriteStores, setFavoriteStores] = useState([]);
+  const [frequentStores, setFrequentStores] = useState([]);
+
   const dateText = new Date().toLocaleDateString("ko-KR", {
     month: "long",
     day: "numeric",
@@ -79,20 +56,79 @@ export default function UserMainPage() {
   });
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
+    if (!loading && user) {
+        loadData();
+        loadFavorites();
+    }
+  }, [user, loading]);
+
+  const loadData = async () => {
+    try {
+        // 랜덤 가게 10개
         const allStores = await appUserStoreService.getRandomStores();
-        
         const shuffled = [...allStores].sort(() => 0.5 - Math.random());
         const selected = shuffled.slice(0, 10);
-
         setRandomStores(selected);
-      } catch (e) {
+    } catch (e) {
+        console.error(separator);
+        console.error("랜덤 가게 불러오기 실패");
         console.error(e);
+        console.error(separator);
+    }
+
+    try{
+      // 자주 주문한 가게
+      if(user){
+        const userId = user.appUserId;
+        console.log(separator);
+        console.log("user")
+        console.log(user);
+        console.log("UserId: ",userId);
+        console.log(separator);
+        const frequent = await appUserStoreOrderService.getFrequentStores(userId,5);
+        console.log(separator);
+        console.log("자주 주문한 가게 목록")
+        console.log(frequent);
+        console.log(separator);
+        setFrequentStores(frequent);
       }
+    } catch(e){
+      console.error(separator);
+        console.error("자주 주문한 가게 불러오기 실패");
+        console.error(e);
+        console.error(separator);
+    }
     };
-    loadData();
-  }, []);
+
+    const loadFavorites = async () => {
+        try {
+          // 1. Get List of Favorites (IDs)
+          const favData = await appUserFavoriteService.getMyFavorites();
+          
+          if (favData && favData.length > 0) {
+            // 2. Fetch Details for each to get images/status
+            const detailsPromises = favData.map(async (fav) => {
+              try {
+                const detail = await appUserStoreService.getStoreDetails(fav.storeId);
+                // Merge the favoriteId (from the list) with the details (from the store API)
+                return { ...detail, favoriteId: fav.favoriteId };
+              } catch (e) {
+                console.error(`Failed to load store ${fav.storeId}`, e);
+                return null; 
+              }
+            });
+    
+            const results = await Promise.all(detailsPromises);
+            setFavoriteStores(results.filter(s => s !== null));
+            console
+          } else {
+            setFavoriteStores([]);
+          }
+        } catch (err) {
+          console.error(err);
+        } finally {
+        }
+      };
 
   return (
     <div className="user-main-container" style={{ paddingBottom: '80px' }}>
@@ -138,27 +174,15 @@ export default function UserMainPage() {
       </section>
 
       {/* 3. 자주 주문한 곳 (StoreCarousel 활용) */}
-      <div id="Frequent_Visit">
-        <StoreCarousel title="자주 주문한 곳" stores={FREQUENT_STORES} pages={2.2} />
-      </div>
+      {frequentStores.length > 0 && (
+        <div id="Frequent_Visit">
+          <StoreCarousel title="자주 주문한 곳" stores={frequentStores} pages={2.2} />
+        </div>
+      )}
 
       {/* 4. 즐겨찾기 (StoreCarousel 활용) */}
       <div id="Favorite_Store">
-        <StoreCarousel title="즐겨찾기" stores={FAVORITE_STORES} />
-      </div>
-
-      {/* (참고) 기존 대시보드 레이아웃을 사용하고 싶다면 주석 해제하여 하단에 배치 가능 */}
-      <div style={{ marginTop: '30px', padding: '0 16px' }}>
-        <DashboardLayout
-           roleLabel="사용자"
-           userName={user.name}
-           dateText={dateText}
-           quickActions={quickActions}
-           summaryCards={summaryCards}
-           activities={activities}
-           notices={notices}
-           isLoading={loading}
-         />
+        <StoreCarousel title="즐겨찾기" stores={favoriteStores} />
       </div>
     </div>
   );

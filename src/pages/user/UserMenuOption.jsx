@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { HiArrowLeft, HiMinus, HiPlus, HiCheck } from "react-icons/hi";
 import { appUserStoreService } from "../../api/appuser/StoreService";
+import axiosInstance from "../../api/axios"; 
+import "./UserMenuOption.css";
 
 export default function UserMenuOption() {
   const { menuId } = useParams();
@@ -10,7 +12,7 @@ export default function UserMenuOption() {
   const [menu, setMenu] = useState(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [selectedOptions, setSelectedOptions] = useState({}); // { groupId: [optionId, ...] }
+  const [selectedOptions, setSelectedOptions] = useState({});
 
   useEffect(() => {
     loadMenu();
@@ -20,7 +22,9 @@ export default function UserMenuOption() {
     try {
       const data = await appUserStoreService.getMenuDetail(menuId);
       setMenu(data);
+      setSelectedOptions({});
     } catch (error) {
+      console.error("Menu Load Failed:", error);
       alert("메뉴 정보를 불러오는데 실패했습니다.");
       navigate(-1);
     } finally {
@@ -28,13 +32,14 @@ export default function UserMenuOption() {
     }
   };
 
-  const toggleOption = (groupId, optionId) => {
+  const handleOptionClick = (groupId, optionId) => {
     setSelectedOptions(prev => {
-      const current = prev[groupId] || [];
-      if (current.includes(optionId)) {
-        return { ...prev, [groupId]: current.filter(id => id !== optionId) };
+      const currentSelected = prev[groupId] || [];
+      const isAlreadySelected = currentSelected.includes(optionId);
+      if (isAlreadySelected) {
+        return { ...prev, [groupId]: currentSelected.filter(id => id !== optionId) };
       } else {
-        return { ...prev, [groupId]: [...current, optionId] };
+        return { ...prev, [groupId]: [...currentSelected, optionId] };
       }
     });
   };
@@ -42,8 +47,7 @@ export default function UserMenuOption() {
   const calculateTotalPrice = () => {
     if (!menu) return 0;
     let total = menu.menuPrice;
-    
-    // Add price of selected options
+    // (옵션 가격 계산 로직 유지 - UI 표시용)
     menu.optionGroups?.forEach(group => {
       const selectedIds = selectedOptions[group.menuOptionGroupId] || [];
       group.options.forEach(opt => {
@@ -52,98 +56,126 @@ export default function UserMenuOption() {
         }
       });
     });
-    
     return total * quantity;
   };
 
   const isFormValid = () => {
     if (!menu) return false;
-    // Check required groups
-    for (const group of menu.optionGroups) {
+    for (const group of menu.optionGroups || []) {
       if (group.required) {
-        const selected = selectedOptions[group.menuOptionGroupId];
-        if (!selected || selected.length === 0) return false;
+        const selectedCount = (selectedOptions[group.menuOptionGroupId] || []).length;
+        if (selectedCount === 0) return false;
       }
     }
     return true;
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!isFormValid()) return;
     
-    // Logic to add to cart (localStorage or API)
-    // For now, just alert and go back
-    console.log("Add to cart:", {
-        menuId: menu.menuId,
-        quantity,
-        options: selectedOptions
-    });
-    alert("장바구니에 담았습니다!");
-    navigate(-1);
+    // [수정] 백엔드 CartItemDTO 필드명에 맞춰 키 이름 변경 (quantity -> cartItemQuantity)
+    const payload = {
+      menuId: menu.menuId,
+      cartItemQuantity: quantity 
+    };
+
+    try {
+      await axiosInstance.post("/api/v1/appuser/cart/items", payload);
+      
+      if (window.confirm("장바구니에 담았습니다. 장바구니로 이동하시겠습니까?")) {
+        navigate("/user/cart");
+      } else {
+        navigate(-1);
+      }
+    } catch (error) {
+      console.error("Add to cart failed:", error);
+      alert("장바구니 담기에 실패했습니다.");
+    }
   };
 
-  if (loading) return <div className="flex justify-center p-10">Loading...</div>;
+  if (loading) return <div className="loading-screen">메뉴 정보를 불러오는 중...</div>;
   if (!menu) return null;
 
   return (
-    <div className="bg-white min-h-screen pb-24 relative">
-      {/* Header */}
-      <div className="sticky top-0 bg-white z-10 border-b p-4 flex items-center">
-        <button onClick={() => navigate(-1)} className="mr-4"><HiArrowLeft size={24}/></button>
-        <h1 className="font-bold text-lg">{menu.menuName}</h1>
+    <div className="menu-option-page">
+      {/* ... (UI 렌더링 부분 기존과 동일, 생략) ... */}
+       <div className="menu-hero">
+        {menu.menuImageUrl ? (
+          <img src={menu.menuImageUrl} alt={menu.menuName} className="menu-hero-img" />
+        ) : (
+          <div className="menu-hero-placeholder">이미지 없음</div>
+        )}
       </div>
 
-      {/* Info */}
-      <div className="p-4">
-          <h2 className="text-2xl font-bold mb-2">{menu.menuName}</h2>
-          <p className="text-gray-500 mb-4">{menu.menuDescription}</p>
-          <p className="text-xl font-bold">{menu.menuPrice.toLocaleString()}원</p>
+      <div className="menu-info-section">
+          <h2 className="menu-title">{menu.menuName}</h2>
+          <p className="menu-desc">{menu.menuDescription}</p>
+          <div className="menu-price-row">
+            <span className="menu-price">{menu.menuPrice.toLocaleString()}원</span>
+          </div>
       </div>
-      <div className="h-2 bg-gray-100"></div>
 
-      {/* Options */}
-      <div className="p-4 space-y-6">
-        {menu.optionGroups?.map(group => (
-            <div key={group.menuOptionGroupId}>
-                <h3 className="font-bold text-lg mb-3">
-                    {group.menuOptionGroupName} 
-                    {group.required && <span className="text-blue-500 text-sm ml-2">(필수)</span>}
-                </h3>
-                <div className="space-y-2">
-                    {group.options.map(opt => {
-                        const isSelected = selectedOptions[group.menuOptionGroupId]?.includes(opt.menuOptionId);
-                        return (
-                            <div key={opt.menuOptionId} 
-                                 onClick={() => toggleOption(group.menuOptionGroupId, opt.menuOptionId)}
-                                 className={`flex justify-between p-3 border rounded cursor-pointer ${isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}
-                            >
-                                <div className="flex items-center gap-2">
-                                    {isSelected && <HiCheck className="text-blue-500"/>}
-                                    <span>{opt.menuOptionName}</span>
+      <div className="option-list">
+        {menu.optionGroups?.map(group => {
+            return (
+                <div key={group.menuOptionGroupId} className="option-group">
+                    <div className="group-header">
+                        <div className="group-title-row">
+                            <h3 className="group-title">{group.menuOptionGroupName}</h3>
+                            {group.required ? (
+                                <span className="badge-required">필수</span>
+                            ) : (
+                                <span className="badge-optional">선택</span>
+                            )}
+                        </div>
+                    </div>
+                    <div className="option-items">
+                        {group.options.map(opt => {
+                            const isSelected = selectedOptions[group.menuOptionGroupId]?.includes(opt.menuOptionId);
+                            return (
+                                <div 
+                                    key={opt.menuOptionId} 
+                                    onClick={() => handleOptionClick(group.menuOptionGroupId, opt.menuOptionId)}
+                                    className="option-item"
+                                >
+                                    <div className="option-label">
+                                        <div className={`selection-indicator checkbox ${isSelected ? 'selected' : ''}`}>
+                                            {isSelected && <HiCheck className="check-icon" />}
+                                        </div>
+                                        <span className={`option-name ${isSelected ? 'selected-text' : ''}`}>
+                                            {opt.menuOptionName}
+                                        </span>
+                                    </div>
+                                    <span className="option-price">
+                                        {opt.menuOptionPrice > 0 ? `+${opt.menuOptionPrice.toLocaleString()}원` : "0원"}
+                                    </span>
                                 </div>
-                                <span>+{opt.menuOptionPrice.toLocaleString()}원</span>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
                 </div>
-            </div>
-        ))}
+            );
+        })}
       </div>
 
-      {/* Bottom Action */}
-      <div className="fixed bottom-0 w-full bg-white border-t p-4 shadow-lg">
-          <div className="flex justify-between items-center mb-4">
-              <span className="font-bold">수량</span>
-              <div className="flex items-center gap-3">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-2 bg-gray-100 rounded"><HiMinus/></button>
-                  <span className="font-bold">{quantity}</span>
-                  <button onClick={() => setQuantity(quantity + 1)} className="p-2 bg-gray-100 rounded"><HiPlus/></button>
+      <div className="bottom-action-bar">
+          <div className="quantity-control-row">
+              <span className="qty-label">수량</span>
+              <div className="qty-stepper">
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="stepper-btn">
+                    <HiMinus />
+                  </button>
+                  <span className="qty-value">{quantity}</span>
+                  <button onClick={() => setQuantity(quantity + 1)} className="stepper-btn">
+                    <HiPlus />
+                  </button>
               </div>
           </div>
+
           <button 
             onClick={handleAddToCart}
             disabled={!isFormValid()}
-            className={`w-full py-3 rounded-lg font-bold text-white ${isFormValid() ? 'bg-green-600' : 'bg-gray-300'}`}
+            className={`add-cart-btn ${isFormValid() ? 'active' : 'disabled'}`}
           >
             {calculateTotalPrice().toLocaleString()}원 담기
           </button>

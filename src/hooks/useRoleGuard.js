@@ -26,6 +26,7 @@ export default function useRoleGuard(expectedAccountType, fallbackUser) {
         const accountType = data.accountType;
         const roleName = data.roleName;
         const allowedRoles = ALLOWED_ROLE_NAMES[expectedAccountType] || [];
+        const realId = data.userId;
         const allowed =
           (accountType && accountType === expectedAccountType) ||
           (roleName && allowedRoles.includes(roleName));
@@ -43,7 +44,10 @@ export default function useRoleGuard(expectedAccountType, fallbackUser) {
           user: {
             ...fallbackUser,
             name: data.name || data.loginKey || fallbackUser.name,
+            nickname: data.nickname || data.loginKey || fallbackUser.nickname,
             accountType: accountType || expectedAccountType,
+            appUserId: realId, 
+            //id: realId,
             roleName,
           },
           loading: false,
