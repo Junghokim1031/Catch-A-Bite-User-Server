@@ -1,4 +1,4 @@
-import { DELIVERY_STATUS, DELIVERY_UI_STEP } from "@/constants/deliveryStatus";
+import { DELIVERY_STATUS, DELIVERY_UI_STEP } from "../constants/deliveryStatus";
 
 /**
  * 백엔드 DeliveryStatus → 프론트 UI 단계

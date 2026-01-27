@@ -1,5 +1,9 @@
+import { useNavigate, useLocation, Link, useSearchParams } from "react-router-dom";
+
 import authStyles from "../styles/auth.module.css";
 import styles from "../styles/dashboard.module.css";
+
+
 
 export default function DashboardLayout({
   roleLabel,
@@ -12,7 +16,8 @@ export default function DashboardLayout({
   isLoading,
 }) {
   const displayName = userName || "게스트";
-
+  const navigate = useNavigate();
+  
   return (
     <div className={authStyles.page}>
       <div className={`${authStyles.panel} ${styles.dashboardPanel}`}>
@@ -62,16 +67,13 @@ export default function DashboardLayout({
           <section className={styles.section}>
             <div className={styles.sectionTitle}>빠른 액션</div>
             <div className={styles.quickActions}>
-              {quickActions.map((action) => (
+              
                 <button
-                  type="button"
-                  key={action.label}
-                  className={styles.actionButton}
+                  onClick={() => navigate("/rider/deliveries")}
                 >
-                  {action.label}
-                  <span className={styles.actionHint}>{action.hint}</span>
+                  
                 </button>
-              ))}
+              
             </div>
 
             <div className={styles.sectionTitle}>공지/알림</div>

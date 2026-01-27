@@ -12,4 +12,6 @@ export const AUTH_ENDPOINTS = {
     "/api/v1/store-owner/auth/exists/business-registration-number",
   riderSignup: "/api/v1/deliverer/auth/signup",
   riderExistsEmail: "/api/v1/deliverer/auth/exists/email",
-};
+}
+
+export default AUTH_ENDPOINTS;
