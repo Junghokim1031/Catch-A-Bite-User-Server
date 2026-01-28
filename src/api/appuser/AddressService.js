@@ -3,7 +3,7 @@ import axiosInstance from "../axios";
 /**
  * AddressService: 배송지 관리 API 통신 모듈
  */
-export const AppUserAdressService = {
+export const AppUserAddressService = {
   
   // ==========================================================
   // 1. 배송지 추가 (POST)
@@ -100,7 +100,26 @@ export const AppUserAdressService = {
       console.error(separator);
       throw error;
     }
+  },  
+  
+  // ==========================================================
+  // 5. 내 배송지 목록 조회 (GET)
+  // ==========================================================
+  getMyAddresses: async (userId) => {
+    try {
+      // Call the new endpoint we made in Controller
+      console.log("API /api/v1/appuser/addresses/list?userId=${userId} 호출 전");
+      console.log("userId:", userId);
+      const response = await axiosInstance.get(`/api/v1/appuser/addresses/list?userId=${userId}`);
+      console.log("Address List Response:", response.data);
+      console.log("Address List Response.data.data:", response.data.data);
+      console.log("Address List Response.data.header:", response.data.header);
+      return response.data; // Expected: { header:..., data: [...] }
+    } catch (error) {
+      console.error("Address List Fetch Error:", error);
+      throw error;
+    }
   }
 }
 
-export default AppUserAdressService;
+export default AppUserAddressService;

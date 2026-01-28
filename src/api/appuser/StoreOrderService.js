@@ -26,11 +26,16 @@ export const appUserStoreOrderService = {
       console.error(separator);
       throw new Error("주문 정보를 다시 확인해주세요.");
     }
-
+    console.log("StoreOrderService:CreateOrder() 호출됨");
     try {
       const response = await axiosInstance.post('/api/v1/appuser/store-orders', orderData);
-      
       const data = response.data.data;
+      console.log(separator);
+      console.log("주문 생성 성공!");
+      console.log(response);
+      console.log("Response.data.data:")
+      console.log(data);
+      console.log(separator);
       if (data && data.header && data.header.code !== 200 && data.header.code !== 201) {
           throw new Error(data.header.message || "주문 생성 중 알 수 없는 오류가 발생했습니다.");
       }

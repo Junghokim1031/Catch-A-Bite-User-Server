@@ -11,6 +11,7 @@ import UserOrderDetail from "../pages/user/UserOrderDetail.jsx";  // 주문 메�
 import UserReview from "../pages/user/UserReview.jsx";            // Review
 import UserOrderHistory from"../pages/user/UserOrderHistory.jsx"; // 주문내역
 import UserFavoriteStores from "../pages/user/UserFavoriteStores.jsx";
+import UserPayment from "../pages/user/UserPayment.jsx";
 
 // 사용자 기초 Layout
 import AppUserBasicLayout from "../layout/appuser/BasicLayout.jsx";
@@ -30,6 +31,8 @@ export default function AppUserRouter() {
                 <Route path="cart" element={<UserCart />} />
                 {/* 카트를 주문하는 페이지 */}
                 <Route path="order" element={<UserOrder />} /> 
+                <Route path="payment" element={<UserPayment />} />
+
                 {/* 
                 <Route path="profile" element={<UserProfile />} />
                 <Route path="orderDetail/:OrderId" element={<UserOrderDetail />} />

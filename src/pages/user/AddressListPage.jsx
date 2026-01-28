@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMe } from "../../services/authService"; // Keep this if authService hasn't moved, otherwise update
-import { addressService } from "../../api/appuser/AddressService";
+import { AppUserAddressService } from "../../api/appuser/AddressService";
 import styles from "../../styles/mypage.module.css";
 
 const emptyForm = {
@@ -23,7 +23,7 @@ export default function AddressListPage() {
 
   const fetchAddresses = async () => {
     try {
-      const payload = await addressService.readAddress("me"); 
+      const payload = await AppUserAddressService.readAddress("me"); 
       const data = payload.data || payload || []; 
       setAddresses(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -88,9 +88,9 @@ export default function AddressListPage() {
 
     try {
       if (isEditing) {
-        await addressService.updateAddress(editingId, payload);
+        await AppUserAddressService.updateAddress(editingId, payload);
       } else {
-        await addressService.createAddress(payload);
+        await AppUserAddressService.createAddress(payload);
       }
       await fetchAddresses();
       resetForm();
@@ -112,7 +112,7 @@ export default function AddressListPage() {
   const handleDelete = async (addressId) => {
     setStatus(null);
     try {
-      await addressService.deleteAddress(addressId);
+      await AppUserAddressService.deleteAddress(addressId);
       await fetchAddresses();
     } catch (error) {
       setStatus(error?.message || "삭제에 실패했습니다.");
@@ -124,7 +124,7 @@ export default function AddressListPage() {
     try {
       const target = addresses.find(a => a.addressId === addressId);
       if(target) {
-         await addressService.updateAddress(addressId, { ...target, isDefault: true });
+         await AppUserAddressService.updateAddress(addressId, { ...target, isDefault: true });
       }
       await fetchAddresses();
     } catch (error) {
