@@ -33,6 +33,19 @@ function stars(rating) {
   return `${full}${empty}`;
 }
 
+function formatDate(v) {
+  if (!v) return "";
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) return String(v).slice(0, 16);
+  return d.toLocaleString("ko-KR", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default function OwnerReviewPage() {
   const params = useParams();
   const paramStoreId = params?.storeId;
@@ -40,7 +53,11 @@ export default function OwnerReviewPage() {
   const canLoad = useMemo(() => Number.isFinite(Number(storeId)) && Number(storeId) > 0, [storeId]);
 
   const [loading, setLoading] = useState(false);
+  const [submittingId, setSubmittingId] = useState(null);
   const [status, setStatus] = useState(null);
+
+  // all | unreplied | replied
+  const [filter, setFilter] = useState("all");
 
   const [pageState, setPageState] = useState({
     content: [],
@@ -100,7 +117,7 @@ export default function OwnerReviewPage() {
       return;
     }
 
-    setLoading(true);
+    setSubmittingId(reviewId);
     setStatus(null);
     try {
       await ownerReviewService.reply(Number(storeId), Number(reviewId), { content });
@@ -108,13 +125,32 @@ export default function OwnerReviewPage() {
       setStatus({ tone: "success", message: "답글이 등록되었습니다." });
       await load(pageState.page);
     } catch (e) {
-      setStatus({ tone: "error", message: e?.response?.data?.message || e?.message || "답글 등록에 실패했습니다." });
+      const serverMsg = String(e?.response?.data?.message ?? "");
+      const httpStatus = Number(e?.response?.status ?? 0);
+
+      if (httpStatus === 409 || /already/i.test(serverMsg)) {
+        setStatus({ tone: "error", message: "이미 답글이 등록된 리뷰입니다." });
+      } else {
+        setStatus({
+          tone: "error",
+          message: e?.response?.data?.message || e?.message || "답글 등록에 실패했습니다.",
+        });
+      }
     } finally {
-      setLoading(false);
+      setSubmittingId(null);
     }
   };
 
   const content = pageState.content;
+
+  const filteredContent = useMemo(() => {
+    if (filter === "all") return content;
+    return content.filter((r) => {
+      const reply = r.replyContent ?? r.reply ?? r.reviewReplyContent ?? "";
+      const hasReply = Boolean(String(reply ?? "").trim());
+      return filter === "replied" ? hasReply : !hasReply;
+    });
+  }, [content, filter]);
 
   return (
     <div className={styles.page}>
@@ -129,6 +165,30 @@ export default function OwnerReviewPage() {
 
       <InlineMessage tone={status?.tone}>{status?.message}</InlineMessage>
       {loading ? <div className={styles.muted}>불러오는 중...</div> : null}
+
+      <div className={styles.filterRow}>
+        <button
+          type="button"
+          className={filter === "all" ? styles.filterBtnActive : styles.filterBtn}
+          onClick={() => setFilter("all")}
+        >
+          전체
+        </button>
+        <button
+          type="button"
+          className={filter === "unreplied" ? styles.filterBtnActive : styles.filterBtn}
+          onClick={() => setFilter("unreplied")}
+        >
+          미답글
+        </button>
+        <button
+          type="button"
+          className={filter === "replied" ? styles.filterBtnActive : styles.filterBtn}
+          onClick={() => setFilter("replied")}
+        >
+          답글완료
+        </button>
+      </div>
 
       <div className={styles.pagerRow}>
         <div className={styles.pagerInfo}>
@@ -156,12 +216,12 @@ export default function OwnerReviewPage() {
       </div>
 
       <div className={styles.list}>
-        {!loading && content.length === 0 ? (
+        {!loading && filteredContent.length === 0 ? (
           <div className={styles.muted}>리뷰가 없습니다.</div>
         ) : (
-          content.map((r, idx) => {
+          filteredContent.map((r, idx) => {
             const reviewId = r.reviewId ?? r.id ?? idx;
-            const writer = r.writerNickname ?? r.nickname ?? r.memberNickname ?? "-";
+            const writer = r.writerNickname ?? r.appUserNickname ?? r.nickname ?? r.memberNickname ?? "익명";
             const rating = r.rating ?? r.reviewRating ?? 0;
             const createdAt = r.reviewCreatedAt ?? r.createdAt ?? r.regDate ?? "";
             const text = r.content ?? r.reviewContent ?? "-";
@@ -177,10 +237,12 @@ export default function OwnerReviewPage() {
                     <div className={styles.subMeta}>
                       <span className={styles.stars}>{stars(rating)}</span>
                       {createdAt ? <span className={styles.dot}>·</span> : null}
-                      {createdAt ? <span className={styles.date}>{String(createdAt).slice(0, 16)}</span> : null}
+                      {createdAt ? <span className={styles.date}>{formatDate(createdAt)}</span> : null}
                     </div>
                   </div>
-                  <div className={styles.badge}>id {reviewId}</div>
+                  <div className={hasReply ? styles.replyChipDone : styles.replyChipTodo}>
+                    {hasReply ? "답글완료" : "미답글"}
+                  </div>
                 </div>
 
                 <div className={styles.content}>{text}</div>
@@ -202,9 +264,9 @@ export default function OwnerReviewPage() {
                         type="button"
                         className={styles.primaryBtn}
                         onClick={() => submitReply(reviewId)}
-                        disabled={loading}
+                        disabled={loading || submittingId === reviewId}
                       >
-                        답글 등록
+                        {submittingId === reviewId ? "등록 중..." : "답글 등록"}
                       </button>
                     </div>
                   )}

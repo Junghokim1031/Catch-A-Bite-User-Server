@@ -5,10 +5,10 @@ export default function DashboardLayout({
   roleLabel,
   userName,
   dateText,
-  quickActions,
-  summaryCards,
-  activities,
-  notices,
+  quickActions = [],
+  summaryCards = [],
+  activities = [],
+  notices = [],
   isLoading,
 
   // ✅ 추가: 액션 클릭 핸들러(없어도 기존처럼 동작)

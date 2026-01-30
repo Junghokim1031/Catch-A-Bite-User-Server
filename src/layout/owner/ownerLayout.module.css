@@ -37,6 +37,57 @@
   gap: 14px;
 }
 
+.sidebarBrand {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 6px 14px;
+  border-bottom: 1px solid var(--owner-sidebar-border);
+}
+
+.sidebarLogoWrap {
+  position: relative;
+  width: 190px;
+  height: auto;
+}
+
+.sidebarLogoLink {
+  display: inline-block;
+  padding: 10px 8px 14px;
+  cursor: pointer;
+}
+
+.sidebarLogo {
+  width: 190px;
+  height: auto;
+  display: block;
+}
+
+/* 기본: 밝은 배경(흰 바탕)에서는 검정 로고 */
+.sidebarLogoLight {
+  display: none;
+}
+
+.sidebarLogoDark {
+  display: block;
+}
+
+/* Owner 사이드바는 검정 배경이므로 흰 로고 사용 */
+.sidebar .sidebarLogoLight {
+  display: block;
+}
+
+.sidebar .sidebarLogoDark {
+  display: none;
+}
+
+.sidebarBrandText {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.92);
+}
+
 .logoLink {
   display: inline-flex;
   text-decoration: none;
@@ -59,7 +110,7 @@
 .navLink {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0;
 
   padding: 14px 10px;
   border-top: 1px solid var(--owner-sidebar-border);
@@ -136,7 +187,7 @@
 .headerRight {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0;
 }
 
 .logoutBtn {
@@ -172,4 +223,51 @@
   font-size: 22px;
   font-weight: 800;
   margin: 0 0 18px;
+}
+
+
+/* Sidebar groups */
+.navGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.navGroupHeader {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+
+  padding: 12px 10px;
+  border-top: 1px solid var(--owner-sidebar-border);
+
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.navGroupHeader:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.navGroupLinksOpen {
+  display: flex;
+  flex-direction: column;
+}
+
+.navGroupLinksClosed {
+  display: none;
+}
+
+.navGroupLinks .navLink {
+  border-top: 0;
+  padding: 12px 10px 12px 18px;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.navLinkText {
+  display: inline-block;
 }

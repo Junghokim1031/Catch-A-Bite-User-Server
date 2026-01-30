@@ -195,3 +195,173 @@
   font-weight: 700;
   font-size: 13px;
 }
+
+
+.sectionCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+  background: #fff;
+}
+
+
+.inlineForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px dashed #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+
+.input {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  outline: none;
+  min-width: 220px;
+}
+.input:focus {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+
+.blackBtn {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #111827;
+  background: #111827;
+  color: #fff;
+  font-weight: 700;
+}
+.blackBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+
+.dangerBtn {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid #ef4444;
+  background: #ef4444;
+  color: #fff;
+  font-weight: 700;
+}
+
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+
+.optionGroupBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
+.optionGroupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+
+.optionCreateRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+
+.optionList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+.optionRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+}
+
+
+
+/* ===== category action buttons (patched) ===== */
+.outlineBtn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+.outlineBtn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.outlineBtn:active {
+  background: #f3f4f6;
+}
+
+/* danger outlined */
+.dangerBtn {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #ef4444;
+  background: #fff;
+  color: #ef4444;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s ease, color 0.12s ease, transform 0.02s ease;
+}
+
+.dangerBtn:hover {
+  background: #fee2e2;
+}
+
+.dangerBtn:active {
+  background: #fecaca;
+  transform: translateY(1px);
+}

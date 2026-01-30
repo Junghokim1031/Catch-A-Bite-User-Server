@@ -41,11 +41,11 @@ function SectionCard({ title, onEdit, editing, children, disabledEdit, subtitle 
           disabled={disabledEdit}
           title={disabledEdit ? "현재 수정할 수 없습니다." : "수정"}
         >
-          ✏️ <span className={styles.editText}>수정</span>
+          ✏ <span className={styles.editText}>수정</span>
         </button>
       </div>
       <div className={styles.cardBody}>{children}</div>
-      {editing ? <div className={styles.cardEditingHint}>편집 중</div> : null}
+      {editing ? <div className={styles.cardEditingHint}></div> : null}
     </div>
   );
 }
@@ -379,7 +379,7 @@ const saveOriginLabel = async () => {
                 </div>
 
                 <div className={styles.hint}>
-                  운영시간은 `patch dto`에 없어서 `put(StoreDTO)`로 저장됩니다.
+                 
                 </div>
               </div>
             )}
@@ -491,7 +491,7 @@ const saveOriginLabel = async () => {
         <div className={styles.bizKey}>사업자등록번호</div>
         <div className={styles.bizVal}>{businessInfo?.businessRegistrationNo ?? "-"}</div>
       </div>
-      <div className={styles.hint}>사업자 정보는 가게관리 화면에서 수정할 수 있습니다.</div>
+      <div className={styles.hint}></div>
     </>
   ) : (
     <div className={styles.formRow}>
@@ -612,7 +612,6 @@ const saveOriginLabel = async () => {
 
 <SectionCard
   title="원산지 표기"
-  subtitle="가게 상세에서 노출되는 원산지 안내 문구"
   editing={editing.origin}
   onEdit={() => toggleEdit("origin")}
 >
@@ -621,17 +620,17 @@ const saveOriginLabel = async () => {
       <div className={styles.readValue}>
         {originLabel ? originLabel : "등록된 원산지 표기가 없습니다."}
       </div>
-      <div className={styles.hint}>최대 4000자까지 입력 가능합니다.</div>
+      <div className={styles.hint}></div>
     </>
   ) : (
     <div className={styles.formRow}>
       <div>
-        <div className={styles.label}>원산지 표기</div>
+        <div className={styles.label}></div>
         <textarea
           className={styles.textarea}
           value={draft.originLabel}
           onChange={(e) => setDraft((p) => ({ ...p, originLabel: e.target.value }))}
-          placeholder="예) 쌀(국내산), 김치(중국산) ..."
+          placeholder="최대 4000자까지 입력 가능합니다."
         />
       </div>
 

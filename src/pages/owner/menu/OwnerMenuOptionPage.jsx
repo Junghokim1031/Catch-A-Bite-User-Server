@@ -141,7 +141,7 @@ export default function OwnerMenuOptionPage() {
         </button>
       </div>
 
-      <div className={pageStyles.card}>
+      <div>
         <div className={formStyles.section}>
           <div className={formStyles.wrap}>
             <div>
@@ -182,7 +182,7 @@ export default function OwnerMenuOptionPage() {
 
       {selectedMenuId && (
         <>
-          <div className={pageStyles.card}>
+          <div>
             <div className={formStyles.section}>
               <div className={formStyles.sectionTitle}>옵션 그룹 추가</div>
 
@@ -218,7 +218,7 @@ export default function OwnerMenuOptionPage() {
             </div>
           </div>
 
-          <div className={pageStyles.card}>
+          <div>
             <div className={formStyles.section}>
               <div className={formStyles.sectionTitle}>옵션 그룹 목록</div>
 

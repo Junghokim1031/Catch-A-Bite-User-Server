@@ -156,7 +156,7 @@ export default function OwnerStoreContextBar({ fixedStoreId, onChange }) {
         )}
 
         <div className={styles.storeContextHint}>
-          주문/리뷰/결제/정산 기능은 선택된 매장을 기준으로 동작합니다.
+
         </div>
 
         {errorText ? (

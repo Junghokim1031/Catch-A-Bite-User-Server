@@ -70,7 +70,7 @@ export default function OwnerMenuPage() {
             className={styles.primaryBtn}
             onClick={() => navigate(`/owner/stores/${sid}/menus/new`)}
           >
-            + 메뉴 등록하기
+            메뉴 등록하기
           </button>
         </div>
       </div>
@@ -99,11 +99,11 @@ export default function OwnerMenuPage() {
             return (
               <div key={menuId} className={styles.card}>
                 <div className={styles.thumb}>
-                  {m.menuImageUrl ? (
-                    <img className={styles.thumbImg} src={m.menuImageUrl} alt={m.menuName ?? m.name} />
-                  ) : (
-                    <div className={styles.thumbFallback} />
-                  )}
+                  {(() => {
+                    const thumbUrl = m.menuThumbnailUrl ?? m.menuImageUrl;
+                    if (!thumbUrl) return <div className={styles.thumbFallback} />;
+                    return <img className={styles.thumbImg} src={thumbUrl} alt={m.menuName ?? m.name} />;
+                  })()}
                 </div>
 
                 <div className={styles.meta}>

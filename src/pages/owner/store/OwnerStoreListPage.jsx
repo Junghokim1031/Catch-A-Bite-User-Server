@@ -76,7 +76,7 @@ export default function OwnerStoreListPage() {
               <tr key={s.storeId ?? s.id}>
                 <td>{s.storeId ?? s.id}</td>
                 <td>{s.storeName ?? s.name ?? "-"}</td>
-                <td>{s.storeStatus ?? s.status ?? "-"}</td>
+                <td>{s.storeOpenStatus ?? s.storeStatus ?? s.status ?? "-"}</td>
                 <td>
                   <button
                     type="button"

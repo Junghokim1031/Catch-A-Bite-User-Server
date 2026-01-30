@@ -1,8 +1,4 @@
-import { lazy } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
-
-// 사용자 기초 Layout
-import AppUserBasicLayout from "../layout/appuser/BasicLayout.jsx";
 
 import RoleLoginPage from "../pages/RoleLoginPage.jsx";
 import RoleSelectPage from "../pages/RoleSelectPage.jsx";
@@ -10,41 +6,17 @@ import SignupOwnerPage from "../pages/SignupOwnerPage.jsx";
 import SignupRiderPage from "../pages/SignupRiderPage.jsx";
 import SignupUserPage from "../pages/SignupUserPage.jsx";
 
-import OwnerMainPage from "../pages/owner/OwnerMainPage.jsx";
 import RiderMainPage from "../pages/rider/RiderMainPage.jsx";
 
-//import UserMainPage from "../pages/user/UserMainPage.jsx";
-
-import UserMainPage from "../pages/user/UserMainPage.jsx";         // 홈페이지
-import UserSearchResult from "../pages/user/UserSearchResult.jsx"; // 주소 검색
-import UserProfile from "../pages/user/UserProfile.jsx";           // 마이페이지
-import UserStorePage from "../pages/user/UserStorePage.jsx";       // 가게 페이지
-import UserMenuOption from "../pages/user/UserMenuOption.jsx";     // 메뉴 추가 옵션
-import UserCart from "../pages/user/UserCart.jsx";                 // 카트
-import UserOrder from "../pages/user/UserOrder.jsx";               // 주문 (최신 주문내역)
-import UserOrderDetail from "../pages/user/UserOrderDetail.jsx";   // 주문 메뉴 정보
-import UserReview from "../pages/user/UserReview.jsx";             // Review
-import UserOrderHistory from "../pages/user/UserOrderHistory.jsx"; // 주문내역
+import AppUserBasicLayout from "../layout/appuser/BasicLayout.jsx";
+import UserMainPage from "../pages/user/UserMainPage.jsx";
+import UserSearchResult from "../pages/user/UserSearchResult.jsx";
 import UserFavoriteStores from "../pages/user/UserFavoriteStores.jsx";
+import UserStorePage from "../pages/user/UserStorePage.jsx";
+import UserMenuOption from "../pages/user/UserMenuOption.jsx";
 
-import ProtectedRoute from "./ProtectedRoute";
-import OwnerLayout from "../layout/owner/OwnerLayout";
-import OwnerStoreListPage from "../pages/owner/store/OwnerStoreListPage.jsx";
-import OwnerStoreCreatePage from "../pages/owner/store/OwnerStoreCreatePage.jsx";
-import OwnerStoreEditPage from "../pages/owner/store/OwnerStoreEditPage.jsx";
-import OwnerStoreImagePage from "../pages/owner/storeImage/OwnerStoreImagePage.jsx";
-import OwnerMenuCategoryPage from "../pages/owner/menu/OwnerMenuCategoryPage.jsx";
-import OwnerMenuOptionPage from "../pages/owner/menu/OwnerMenuOptionPage.jsx";
-import OwnerOrderDetailPage from "../pages/owner/order/OwnerOrderDetailPage.jsx";
-
-import OwnerMenuPage from "../pages/owner/menu/OwnerMenuPage.jsx";
-import OwnerMenuEditPage from "../pages/owner/menu/OwnerMenuEditPage.jsx";
-import OwnerOrderListPage from "../pages/owner/order/OwnerOrderListPage.jsx";
-import OwnerReviewPage from "../pages/owner/review/OwnerReviewPage.jsx";
-import OwnerPaymentPage from "../pages/owner/payment/OwnerPaymentPage.jsx";
-import OwnerTransactionPage from "../pages/owner/transaction/OwnerTransactionPage.jsx";
-import OwnerDeliveryListPage from "../pages/owner/delivery/OwnerDeliveryListPage.jsx";
-import OwnerDeliveryDetailPage from "../pages/owner/delivery/OwnerDeliveryDetailPage.jsx";
+// ✅ 분리된 Owner Router
+import AppOwnerRouter from "./AppOwnerRouter.jsx";
 
 export default function AppRouter({ onAuthRefresh }) {
   return (
@@ -79,57 +51,13 @@ export default function AppRouter({ onAuthRefresh }) {
         <Route path="favorite" element={<UserFavoriteStores />} />
         <Route path="store/:storeId" element={<UserStorePage />} />
         <Route path="menu/:menuId" element={<UserMenuOption />} />
-
-        {/*
-        <Route path="profile" element={<UserProfile />} />
-        <Route path="cart" element={<UserCart />} />
-        <Route path="order" element={<UserOrder />} />
-        <Route path="orderDetail" element={<UserOrderDetail />} />
-        <Route path="review" element={<UserReview />} />
-        <Route path="orderHistory" element={<UserOrderHistory />} />
-        */}
       </Route>
 
-      {/* --- 사업자 페이지(보호 라우트) --- */}
-      <Route element={<ProtectedRoute expectedRole="OWNER" redirectTo="/owner/login" />}>
-        <Route path="/owner" element={<OwnerLayout />}>
-          <Route index element={<Navigate to="main" replace />} />
-          <Route path="main" element={<OwnerMainPage />} />
-
-          {/* 사이드바 링크와 매칭 */}
-          <Route path="stores" element={<OwnerStoreListPage />} />
-          <Route path="stores/new" element={<OwnerStoreCreatePage />} />
-          <Route path="stores/:storeId/edit" element={<OwnerStoreEditPage />} />
-          <Route path="stores/:storeId/images" element={<OwnerStoreImagePage />} />
-          <Route path="stores/:storeId/menus" element={<OwnerMenuPage />} />
-          <Route path="stores/:storeId/menus/new" element={<OwnerMenuEditPage />} />
-          <Route path="stores/:storeId/menus/:menuId/edit" element={<OwnerMenuEditPage />} />
-          <Route path="stores/:storeId/menus/categories" element={<OwnerMenuCategoryPage />} />
-          <Route path="stores/:storeId/menus/options" element={<OwnerMenuOptionPage />} />
-          <Route path="stores/:storeId/orders" element={<OwnerOrderListPage />} />
-          <Route path="stores/:storeId/orders/:orderId" element={<OwnerOrderDetailPage />} />
-          <Route path="stores/:storeId/reviews" element={<OwnerReviewPage />} />
-          <Route path="stores/:storeId/payments" element={<OwnerPaymentPage />} />
-          <Route path="stores/:storeId/transactions" element={<OwnerTransactionPage />} />
-          <Route path="deliveries" element={<OwnerDeliveryListPage />} />
-          <Route path="deliveries/:deliveryId" element={<OwnerDeliveryDetailPage />} />
-          {/* backward-compatible routes */}
-          <Route path="reviews" element={<OwnerReviewPage />} />
-          <Route path="payments" element={<OwnerPaymentPage />} />
-          <Route path="transactions" element={<OwnerTransactionPage />} />
-        </Route>
-      </Route>
-
+      {/* --- 사업자 페이지 --- */}
+      <Route path="/owner/*" element={<AppOwnerRouter />} />
 
       {/* --- 라이더 페이지 --- */}
       <Route path="/rider/main" element={<RiderMainPage />} />
-
-      {/* 기존 단독 라우트(현재는 owner를 보호 라우트로 전환했으니 주석 보존) */}
-      {/*
-      <Route path="/owner/main" element={<OwnerMainPage />} />
-      */}
-
-      <Route path="/owner" element={<Navigate to="/owner/main" replace />} />
       <Route path="/rider" element={<Navigate to="/rider/main" replace />} />
 
       <Route path="*" element={<Navigate to="/select" replace />} />

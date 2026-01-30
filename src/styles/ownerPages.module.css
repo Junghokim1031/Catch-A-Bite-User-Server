@@ -158,3 +158,108 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+.outlineBtn {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 14px;
+  background: #fff;
+  color: #111;
+  cursor: pointer;
+  font-weight: 800;
+}
+.outlineBtn:hover {
+  background: #f9fafb;
+}
+.outlineBtn:disabled,
+.primaryBtn:disabled,
+.switchBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  z-index: 9999;
+}
+
+.modal {
+  width: min(520px, 92vw);
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modalTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.modalTitle {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.modalClose {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+  padding: 6px;
+  border-radius: 10px;
+}
+
+.modalClose:hover {
+  background: #f3f4f6;
+}
+
+.optionGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.optionBtn {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 10px;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.optionBtn:hover {
+  background: #f9fafb;
+}
+
+.optionBtnActive {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+}
+
+.modalActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 640px) {
+  .optionGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
