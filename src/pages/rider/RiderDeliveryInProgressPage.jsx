@@ -16,16 +16,17 @@ const fallbackUser = { name: "Sample Rider" };
 
 function pickFields(d) {
   return {
-    deliveryId: d?.deliveryId ?? d?.orderDeliveryId ?? d?.deliveryId,
+    deliveryId: d?.deliveryId ?? d?.orderDeliveryId ?? d?.id,
     status: d?.orderDeliveryStatus ?? d?.status,
+
     storeName: d?.storeName ?? d?.store?.storeName ?? "가게",
-    storeAddress:
-      d?.storeAddress ?? d?.store?.storeAddress ?? d?.pickupAddress ?? "-",
-    dropoffAddress:
-      d?.address ?? d?.deliveryAddress ?? d?.dropoffAddress ?? "-",
-    fee: d?.deliveryFee ?? d?.fee ?? d?.orderDeliveryFee,
-    distance: d?.orderDeliveryDistance ?? d?.distanceKm ?? d?.distance,
-    etaMin: d?.etaMin ?? d?.estimatedMinutes ?? d?.eta,
+    storeAddress: d?.storeAddress ?? d?.store?.storeAddress ?? "-",
+    dropoffAddress: d?.dropoffAddress ?? d?.orderAddressSnapshot ?? "-",
+
+    fee: d?.orderDeliveryFee ?? d?.deliveryFee ?? d?.fee,
+
+    // 시간 null 허용
+    // etaMin: d?.orderDeliveryEstTime ?? d?.etaMin ?? null,
   };
 }
 
@@ -34,20 +35,20 @@ function formatKRW(amount) {
   return `${Number(amount).toLocaleString("ko-KR")}원`;
 }
 
-function formatKm(km) {
-  if (km == null) return "-";
-  const n = Number(km);
-  if (Number.isNaN(n)) return String(km);
-  return `${n.toFixed(1)}km`;
-}
+// function formatKm(km) {
+//   if (km == null) return "-";
+//   const n = Number(km);
+//   if (Number.isNaN(n)) return String(km);
+//   return `${n.toFixed(1)}km`;
+// }
 
-function formatEta(min) {
-  if (min == null) return "-";
-  const n = Number(min);
-  if (Number.isNaN(n)) return String(min);
-  if (n <= 0) return "도착";
-  return `${n}분`;
-}
+// function formatEta(min) {
+//   if (min == null) return "-";
+//   const n = Number(min);
+//   if (Number.isNaN(n)) return String(min);
+//   if (n <= 0) return "도착";
+//   return `${n}분`;
+// }
 
 export default function RiderDeliveryInProgressPage() {
   const { user, loading } = useRoleGuard("RIDER", fallbackUser);
@@ -92,7 +93,7 @@ export default function RiderDeliveryInProgressPage() {
     return DELIVERY_UI_CONFIG?.[uiStatus]?.label ?? uiStatus;
   }, [uiStatus]);
 
-  // ✅ 버튼 노출 규칙 (현재 흐름 기준)
+  // 버튼 노출 규칙 (현재 흐름 기준)
   // - 픽업완료 후 들어오므로 보통 PICKED_UP 상태일 확률 ↑ → "배달 시작" 버튼 제공
   // - IN_DELIVERY면 "배달 완료" 버튼 제공
   const canStart = view?.status === DELIVERY_STATUS.PICKED_UP;
@@ -138,8 +139,8 @@ export default function RiderDeliveryInProgressPage() {
       return;
     }
 
-    // ✅ 완료 후 완료 페이지로 이동(없으면 우선 목록으로 보내도 됨)
-    navigate(`/rider/deliveries/${view.deliveryId}/complete`);
+    // 완료 후 배달현황(목록)으로 이동
+    navigate(`/rider/deliveries`);
   }
 
   const headerRight = useMemo(() => {
@@ -208,11 +209,6 @@ export default function RiderDeliveryInProgressPage() {
               <div style={{ marginTop: 8, fontSize: 13, color: "#666" }}>
                 <div>📍 픽업: {view.storeAddress}</div>
                 <div style={{ marginTop: 4 }}>🏁 도착: {view.dropoffAddress}</div>
-              </div>
-
-              <div style={{ marginTop: 10, display: "flex", gap: 10, fontSize: 13 }}>
-                <span>⏱ {formatEta(view.etaMin)}</span>
-                <span>🧭 {formatKm(view.distance)}</span>
               </div>
 
               <div style={{ marginTop: 12, display: "flex", gap: 8 }}>

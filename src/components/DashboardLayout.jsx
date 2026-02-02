@@ -1,23 +1,20 @@
-import { useNavigate, useLocation, Link, useSearchParams } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 import authStyles from "../styles/auth.module.css";
 import styles from "../styles/dashboard.module.css";
-
-
 
 export default function DashboardLayout({
   roleLabel,
   userName,
   dateText,
-  quickActions,
-  summaryCards,
-  activities,
-  notices,
+  quickActions = [],   // 기본값
+  summaryCards = [],
+  activities = [],
+  notices = [],
   isLoading,
 }) {
   const displayName = userName || "게스트";
   const navigate = useNavigate();
-  
+
   return (
     <div className={authStyles.page}>
       <div className={`${authStyles.panel} ${styles.dashboardPanel}`}>
@@ -26,9 +23,6 @@ export default function DashboardLayout({
             <div className={styles.roleTag}>{roleLabel}</div>
             <div className={styles.greeting}>
               안녕하세요, <span className={styles.greetingName}>{displayName}</span>님
-            </div>
-            <div className={styles.subText}>
-              오늘도 안정적인 운영을 위해 준비했습니다.
             </div>
             {isLoading ? (
               <div className={styles.loadingText}>정보를 불러오는 중...</div>
@@ -67,13 +61,16 @@ export default function DashboardLayout({
           <section className={styles.section}>
             <div className={styles.sectionTitle}>빠른 액션</div>
             <div className={styles.quickActions}>
-              
+              {quickActions.map((a) => (
                 <button
-                  onClick={() => navigate("/rider/deliveries")}
+                  key={a.label}
+                  type="button"
+                  onClick={a.onClick ?? (() => a.to ? navigate(a.to) : null)}
+                  className={styles.actionButton}
                 >
-                  
+                  {a.label}
                 </button>
-              
+              ))}
             </div>
 
             <div className={styles.sectionTitle}>공지/알림</div>

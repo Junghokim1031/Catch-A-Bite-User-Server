@@ -1,19 +1,16 @@
 import api from "./axios";
-import API from "./endpoints";
+import DELIVERY_ACTION_ENDPOINTS from "../endpoints/deliveryActionEndpoints";
 
-/**
- * POST : DeliveryController (배달 상태 변경) 전용 API
- */
 export const deliveryActionApi = {
-  accept: (deliveryId, delivererId) =>
-    api.post(API.deliveries.accept(deliveryId), { delivererId }),
+  accept: (deliveryId) =>
+    api.post(DELIVERY_ACTION_ENDPOINTS.accept(deliveryId)),
 
-  pickupComplete: (deliveryId, delivererId) =>
-    api.post(API.deliveries.pickupComplete(deliveryId), { delivererId }),
+  pickupComplete: (deliveryId) =>
+    api.post(DELIVERY_ACTION_ENDPOINTS.pickupComplete(deliveryId)),
 
-  start: (deliveryId, delivererId) =>
-    api.post(API.deliveries.start(deliveryId), { delivererId }),
+  start: (deliveryId) =>
+    api.post(DELIVERY_ACTION_ENDPOINTS.start(deliveryId)),
 
-  complete: (deliveryId, delivererId) =>
-    api.post(API.deliveries.complete(deliveryId), { delivererId }),
+  complete: (deliveryId) =>
+    api.post(DELIVERY_ACTION_ENDPOINTS.complete(deliveryId)),
 };

@@ -29,39 +29,33 @@ function formatKRW(amount) {
 }
 
 function DeliveryCard({ delivery, onClick }) {
-  // 백엔드 status -> UI 단계 -> 라벨/액션
   const uiStatus = mapToUiStatus(delivery.orderDeliveryStatus ?? delivery.status);
   const config = DELIVERY_UI_CONFIG[uiStatus] ?? { label: uiStatus, actions: [] };
 
-  // ✅ 백엔드 OrderDeliveryDTO 필드명이 아직 확정 전이면 안전하게 fallback 처리
-  const storeName = delivery.storeName ?? delivery.store?.storeName ?? "가게";
-  const address = delivery.address ?? delivery.deliveryAddress ?? "-";
-  const fee = delivery.deliveryFee ?? delivery.fee ?? delivery.orderDeliveryFee;
+  // 백엔드 DTO 기준으로 우선순위 재정의
+  const storeName =
+    delivery.storeName ??
+    delivery.store?.storeName ??
+    "가게";
+
+  // '배달주소' = 고객 주소(드롭오프)
+  const address =
+    delivery.dropoffAddress ??             // 백엔드에서 내려주면 이걸 사용
+    delivery.orderAddressSnapshot ??        // (혹시 내려주면)
+    delivery.address ??
+    delivery.deliveryAddress ??
+    "-";
+
+  // 배달금액
+  const fee =
+    delivery.orderDeliveryFee ??           // StoreOrder.orderDeliveryFee
+    delivery.deliveryFee ??
+    delivery.fee;
 
   return (
-    <div
-      onClick={onClick}
-      style={{
-        border: "1px solid #e9e9e9",
-        borderRadius: 12,
-        padding: 14,
-        marginBottom: 10,
-        background: "#fff",
-        cursor: "pointer",
-      }}
-    >
+    <div onClick={onClick} style={{ /* 그대로 */ }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span
-          style={{
-            fontSize: 12,
-            padding: "4px 8px",
-            borderRadius: 999,
-            border: "1px solid #ddd",
-            background: "#fafafa",
-          }}
-        >
-          {config.label}
-        </span>
+        <span style={{ /* 그대로 */ }}>{config.label}</span>
         <div style={{ marginLeft: "auto", fontWeight: 800 }}>{formatKRW(fee)}</div>
       </div>
 
@@ -80,9 +74,28 @@ export default function RiderDeliveriesPage() {
   const [fetching, setFetching] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  // ✅ 탭의 여러 status를 “서버 호출 여러 번”으로 가져와 합치기
+  // 픽업완료/배달완료 제어
+  const handleDeliveryClick = (delivery) => {
+      const id = delivery?.deliveryId ?? delivery?.id ?? delivery;
+      const ods = delivery?.orderDeliveryStatus;
+
+      // 상태별 상세 페이지 분기
+      if (ods === DELIVERY_STATUS.IN_DELIVERY) {
+        navigate(`/rider/deliveries/${id}/in-delivery`);
+        return;
+      }
+      if (ods === DELIVERY_STATUS.DELIVERED || ods === DELIVERY_STATUS.CANCELLED) {
+        navigate(`/rider/deliveries/${id}/complete`);
+        return;
+      }
+      navigate(`/rider/deliveries/${id}`);
+    };
+
+  // 탭의 여러 status를 “서버 호출 여러 번”으로 가져와 합치기
   // (백엔드가 status 1개씩만 받도록 되어있음) :contentReference[oaicite:3]{index=3}
   useEffect(() => {
+    if (loading) return;   // me 확인 전에는 호출하지 않음
+
     let cancelled = false;
 
     async function fetchByTab() {
@@ -91,21 +104,27 @@ export default function RiderDeliveriesPage() {
 
       try {
         const statuses = TAB_TO_BACKEND_STATUSES[tab] ?? [];
+
         const results = await Promise.all(
           statuses.map((s) => riderDeliveryService.getMyDeliveriesByStatus(s))
         );
 
-        // 합치기 + 중복 제거(혹시 중복 내려오면)
+        // 서비스에서 이미 "배열"만 리턴하므로 바로 flat
         const merged = results.flat();
+
+        // 중복 제거
         const uniq = new Map();
         for (const d of merged) {
-          const id = d.deliveryId ?? d.orderDeliveryId ?? d.id;
+          const id = d?.deliveryId ?? d?.orderDeliveryId ?? d?.id;
           if (id != null) uniq.set(id, d);
         }
 
         if (!cancelled) setDeliveries(Array.from(uniq.values()));
       } catch (e) {
-        const msg = e?.response?.data?.message || e?.message || "조회 중 오류가 발생했습니다.";
+        const msg =
+          e?.response?.data?.message ||
+          e?.message ||
+          "조회 중 오류가 발생했습니다.";
         if (!cancelled) setErrorMsg(msg);
       } finally {
         if (!cancelled) setFetching(false);
@@ -116,7 +135,7 @@ export default function RiderDeliveriesPage() {
     return () => {
       cancelled = true;
     };
-  }, [tab]);
+  }, [tab, loading]); // loading 의존성 추가 // 로그인 정보가 먼저 오도록 후순위로 미룰 방법 찾기
 
   const headerRight = useMemo(() => {
     if (loading) return "로딩중...";
@@ -146,7 +165,7 @@ export default function RiderDeliveriesPage() {
         >
           ←
         </button>
-        <div style={{ fontWeight: 900 }}>배달현황</div>
+        <div style={{ fontWeight: 900 }}>배달 현황</div>
         <div style={{ marginLeft: "auto", fontSize: 12, color: "#666" }}>{headerRight}</div>
       </div>
 
@@ -208,7 +227,7 @@ export default function RiderDeliveriesPage() {
               <DeliveryCard
                 key={id}
                 delivery={d}
-                onClick={() => navigate(`/rider/deliveries/${id}`)}
+                onClick={() => handleDeliveryClick(d)} style={{ cursor: "pointer" }}
               />
             );
           })}

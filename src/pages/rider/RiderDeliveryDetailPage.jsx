@@ -29,28 +29,22 @@ function formatEta(min) {
 }
 
 function pickDetailFields(d) {
-  // OrderDeliveryDTO 필드명 차이를 고려한 안전 매핑
   return {
     storeName: d?.storeName ?? d?.store?.storeName ?? "가게",
-    storeAddress:
-      d?.storeAddress ??
-      d?.store?.storeAddress ??
-      d?.pickupAddress ??
-      "-",
-    dropoffAddress:
-      d?.address ??
-      d?.deliveryAddress ??
-      d?.dropoffAddress ??
-      "-",
-    fee: d?.deliveryFee ?? d?.fee ?? d?.orderDeliveryFee,
-    distance:
-      d?.orderDeliveryDistance ?? d?.distanceKm ?? d?.distance,
-    etaMin: d?.etaMin ?? d?.estimatedMinutes ?? d?.eta,
-    requestMemo:
-      d?.deliveryRequest ??
-      d?.requestMemo ??
-      d?.orderRequest ??
-      "",
+
+    // 픽업 주소(가게 주소)
+    storeAddress: d?.storeAddress ?? d?.store?.storeAddress ?? "-",
+
+    // 배달 주소(고객 주소)
+    dropoffAddress: d?.dropoffAddress ?? d?.orderAddressSnapshot ?? "-",
+
+    // 배달금액
+    fee: d?.orderDeliveryFee ?? d?.deliveryFee ?? d?.fee,
+
+    // 시간(분) - null 허용
+    // etaMin: d?.orderDeliveryEstTime ?? d?.etaMin ?? d?.estimatedMinutes ?? null,
+
+    requestMemo: d?.deliveryRequest ?? d?.requestMemo ?? d?.orderRequest ?? "",
   };
 }
 
@@ -171,8 +165,7 @@ export default function RiderDeliveryDetailPage() {
                   fontSize: 13,
                 }}
               >
-                <span>⏱ {formatEta(detail.etaMin)}</span>
-                <span>🧭 {formatKm(detail.distance)}</span>
+
               </div>
             </div>
 
@@ -204,24 +197,17 @@ export default function RiderDeliveryDetailPage() {
                 onClick={async () => {
                   if (!delivery) return;
 
-                  const delivererId = user?.delivererId;
-                  if (!delivererId) {
-                    alert("delivererId를 찾을 수 없습니다.");
-                    return;
-                  }
-
                   const realDeliveryId =
                     delivery?.deliveryId ?? delivery?.orderDeliveryId ?? delivery?.id ?? deliveryId;
 
                   setFetching(true);
                   try {
-                    const result = await deliveryActionService.pickupComplete(realDeliveryId, delivererId);
+                    const result = await deliveryActionService.pickupComplete(realDeliveryId);
                     if (!result.ok) {
                       alert(result.message);
                       return;
                     }
-                    // ✅ 성공 → 배달중 페이지로 이동
-                    navigate(`/rider/deliveries/${realDeliveryId}/in-progress`);
+                    navigate(`/rider/deliveries/${realDeliveryId}/complete`);
                   } finally {
                     setFetching(false);
                   }

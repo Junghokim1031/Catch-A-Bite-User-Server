@@ -9,7 +9,7 @@ export default function RiderDeliveryNavigationPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // 1️⃣ 좌표 조회
+  // 좌표 조회
   useEffect(() => {
     if (!deliveryId) return;
 
@@ -26,7 +26,7 @@ export default function RiderDeliveryNavigationPage() {
       });
   }, [deliveryId]);
 
-  // 2️⃣ Kakao 길찾기 실행 (앱 or 웹)
+  // Kakao 길찾기 실행 (앱 or 웹)
   const openKakaoNavigation = (lat, lng, name) => {
     // 카카오맵 길찾기 URL (웹/앱 공용)
     const url = `https://map.kakao.com/link/to/${encodeURIComponent(

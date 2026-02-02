@@ -22,7 +22,7 @@ function safeId(d) {
 }
 
 function pickSummaryFields(d) {
-  // ✅ OrderDeliveryDTO 실제 필드명이 프로젝트마다 다를 수 있어 안전하게 fallback
+  // OrderDeliveryDTO 실제 필드명이 프로젝트마다 다를 수 있어 안전하게 fallback
   const storeName = d?.storeName ?? d?.store?.storeName ?? "가게";
   const storeAddress = d?.storeAddress ?? d?.store?.storeAddress ?? d?.pickupAddress ?? "-";
   const dropoffAddress = d?.address ?? d?.deliveryAddress ?? d?.dropoffAddress ?? "-";
@@ -56,7 +56,7 @@ export default function RiderDeliveryRequestPage() {
   const [errorMsg, setErrorMsg] = useState("");
   const [assignedDeliveries, setAssignedDeliveries] = useState([]);
 
-  // ✅ “수락 대기(배차됨)” 목록 조회: ASSIGNED
+  // “수락 대기(배차됨)” 목록 조회: ASSIGNED
   useEffect(() => {
     let cancelled = false;
 
@@ -84,7 +84,7 @@ export default function RiderDeliveryRequestPage() {
     };
   }, []);
 
-  // ✅ “가장 최신 1건”만 보여주기(필요하면 정렬 기준을 createdTime으로 바꾸면 됨)
+  // “가장 최신 1건”만 보여주기(필요하면 정렬 기준을 createdTime으로 바꾸면 됨)
   const latest = useMemo(() => {
     if (!assignedDeliveries?.length) return null;
     // createdTime 같은 게 있으면 여기서 정렬 추천:
@@ -174,7 +174,7 @@ export default function RiderDeliveryRequestPage() {
                   상세보기
                 </button>
 
-                {/* 🟢 변경 후 코드 (실제 API + 이동) */}
+                {/* 변경 후 코드 (실제 API + 이동) */}
                 <button
                   style={btnStylePrimary}
                   disabled={fetching}
@@ -204,7 +204,7 @@ export default function RiderDeliveryRequestPage() {
                       return;
                     }
 
-                    // ✅ 수락 성공 → 배달 접수 상세로 이동
+                    // 수락 성공 → 배달 접수 상세로 이동
                     navigate(`/rider/deliveries/${deliveryId}`);
                   }}
                   >

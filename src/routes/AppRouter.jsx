@@ -3,7 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 // 사용자 기초 Layout
 import AppUserBasicLayout from "../layout/appuser/BasicLayout.jsx";
 
-import RiderRouter from "./riderRouter.jsx";
+import RiderRouter from "./RiderRouter.jsx";
 
 import RoleLoginPage from "../pages/RoleLoginPage.jsx";
 import RoleSelectPage from "../pages/RoleSelectPage.jsx";
@@ -65,7 +65,7 @@ export default function AppRouter({ onAuthRefresh }) {
       {/* <Route path="/rider/main" element={<RiderMainPage />} /> */}
 
       <Route path="/owner" element={<Navigate to="/owner/main" replace />} />
-      <Route path="/rider" element={<Navigate to="/rider/main" replace />} />
+      <Route path="/rider" element={<Navigate to="/rider" replace />} />
 
       <Route path="*" element={<Navigate to="/select" replace />} />
     </Routes>

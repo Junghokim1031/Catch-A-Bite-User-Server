@@ -2,7 +2,7 @@
 import axiosInstance from "../axios";
 
 /**
- * ✅ A 방식(Principal 기반) 액션 API
+ *  (Principal 기반) 액션 API
  * - delivererId를 Body로 보내지 않음
  * - 백엔드: /api/v1/deliveries/**
  */

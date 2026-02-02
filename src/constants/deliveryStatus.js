@@ -1,5 +1,5 @@
 /**
- * 🔹 백엔드 DeliveryStatus 원본
+ * 백엔드 DeliveryStatus 원본
  */
 export const DELIVERY_STATUS = {
   PENDING: "PENDING",
@@ -12,7 +12,7 @@ export const DELIVERY_STATUS = {
 };
 
 /**
- * 🔹 라이더 UI 단계 (화면 표현용)
+ * 라이더 UI 단계 (화면 표현용)
  * - 백엔드 상태 여러 개를 하나의 UI 단계로 묶을 수 있음
  */
 export const DELIVERY_UI_STEP = {

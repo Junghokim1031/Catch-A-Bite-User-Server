@@ -5,6 +5,7 @@ import useRoleGuard from "../../hooks/useRoleGuard.js";
 import { riderDeliveryService } from "../../services/riderDeliveryService.js";
 import { mapToUiStatus } from "../../utils/mapDeliveryStatus.js";
 import { DELIVERY_UI_CONFIG } from "../../constants/deliveryUiConfig.js";
+import { deliveryActionService } from "../../services/deliveryActionService.js";
 
 const fallbackUser = { name: "Sample Rider" };
 
@@ -17,8 +18,6 @@ function pickSummary(d) {
     dropoffAddress:
       d?.address ?? d?.deliveryAddress ?? d?.dropoffAddress ?? "-",
     fee: d?.deliveryFee ?? d?.fee ?? d?.orderDeliveryFee,
-    distance:
-      d?.orderDeliveryDistance ?? d?.distanceKm ?? d?.distance,
     completedAt:
       d?.orderDeliveryCompleteTime ??
       d?.completedAt ??
@@ -30,13 +29,6 @@ function pickSummary(d) {
 function formatKRW(amount) {
   if (amount == null) return "-";
   return `${Number(amount).toLocaleString("ko-KR")}원`;
-}
-
-function formatKm(km) {
-  if (km == null) return "-";
-  const n = Number(km);
-  if (Number.isNaN(n)) return String(km);
-  return `${n.toFixed(1)}km`;
 }
 
 function formatDateTime(dt) {
@@ -164,7 +156,6 @@ export default function RiderDeliveryCompletePage() {
               </div>
 
               <div style={{ display: "flex", gap: 10, fontSize: 13 }}>
-                <span>🧭 {formatKm(summary.distance)}</span>
                 <span>💰 {formatKRW(summary.fee)}</span>
               </div>
             </div>
@@ -182,21 +173,32 @@ export default function RiderDeliveryCompletePage() {
             </div>
 
             {/* CTA */}
-            <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-              <button
-                style={btnStyleGhost}
-                onClick={() => navigate("/rider")}
-              >
-                홈으로
-              </button>
+              <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
+                <button style={btnStyleGhost} onClick={() => navigate("/rider/main")}>
+                  홈으로
+                </button>
 
-              <button
-                style={btnStylePrimary}
-                onClick={() => navigate("/rider/deliveries")}
-              >
-                배달 목록으로
-              </button>
-            </div>
+                <button
+                  style={btnStylePrimary}
+                  disabled={fetching}
+                  onClick={async () => {
+                    const realDeliveryId = summary?.deliveryId ?? deliveryId;
+                    setFetching(true);
+                    try {
+                      const result = await deliveryActionService.complete(realDeliveryId);
+                      if (!result.ok) {
+                        alert(result.message);
+                        return;
+                      }
+                      navigate("/rider/deliveries");
+                    } finally {
+                      setFetching(false);
+                    }
+                  }}
+                >
+                  {fetching ? "처리 중..." : "배달완료"}
+                </button>
+              </div>
           </>
         )}
       </div>

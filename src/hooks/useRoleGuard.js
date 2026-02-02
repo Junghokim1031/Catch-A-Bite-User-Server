@@ -45,6 +45,8 @@ export default function useRoleGuard(expectedAccountType, fallbackUser) {
             name: data.name || data.loginKey || fallbackUser.name,
             accountType: accountType || expectedAccountType,
             roleName,
+             // 핵심: /me에 userId만 오면 그걸 delivererId로 사용  -- delivererId 관련
+            delivererId: data.delivererId ?? data.userId ?? data.appUserId,
           },
           loading: false,
         });

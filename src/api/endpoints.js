@@ -1,3 +1,6 @@
+import RIDER_DELIVERIES from "../endpoints/riderDeliveries";
+import DELIVERY_ACTION_ENDPOINTS from "../endpoints/deliveryActionEndpoints";
+
 export const AUTH_ENDPOINTS = {
   login: "/api/v1/auth/login",
   signup: "/api/v1/auth/signup",
@@ -12,6 +15,8 @@ export const AUTH_ENDPOINTS = {
     "/api/v1/store-owner/auth/exists/business-registration-number",
   riderSignup: "/api/v1/deliverer/auth/signup",
   riderExistsEmail: "/api/v1/deliverer/auth/exists/email",
+  riderDeliveries: RIDER_DELIVERIES,
+  deliveryActions : DELIVERY_ACTION_ENDPOINTS,
 }
 
 export default AUTH_ENDPOINTS;

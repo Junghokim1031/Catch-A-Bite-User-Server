@@ -14,36 +14,36 @@ function pickErrorMessage(err) {
 }
 
 export const deliveryActionService = {
-  async accept(deliveryId, delivererId) {
+  async accept(deliveryId) {
     try {
-      const res = await deliveryActionApi.accept(deliveryId, delivererId);
+      const res = await deliveryActionApi.accept(deliveryId);
       return { ok: true, message: pickMessage(res) };
     } catch (err) {
       return { ok: false, message: pickErrorMessage(err) };
     }
   },
 
-  async pickupComplete(deliveryId, delivererId) {
+  async pickupComplete(deliveryId) {
     try {
-      const res = await deliveryActionApi.pickupComplete(deliveryId, delivererId);
+      const res = await deliveryActionApi.pickupComplete(deliveryId);
       return { ok: true, message: pickMessage(res) };
     } catch (err) {
       return { ok: false, message: pickErrorMessage(err) };
     }
   },
 
-  async start(deliveryId, delivererId) {
+  async start(deliveryId) {
     try {
-      const res = await deliveryActionApi.start(deliveryId, delivererId);
+      const res = await deliveryActionApi.start(deliveryId);
       return { ok: true, message: pickMessage(res) };
     } catch (err) {
       return { ok: false, message: pickErrorMessage(err) };
     }
   },
 
-  async complete(deliveryId, delivererId) {
+  async complete(deliveryId) {
     try {
-      const res = await deliveryActionApi.complete(deliveryId, delivererId);
+      const res = await deliveryActionApi.complete(deliveryId);
       return { ok: true, message: pickMessage(res) };
     } catch (err) {
       return { ok: false, message: pickErrorMessage(err) };
