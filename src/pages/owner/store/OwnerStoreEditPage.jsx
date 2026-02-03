@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import InlineMessage from "../../../components/InlineMessage.jsx";
 import { ownerStoreService } from "../../../api/owner/ownerStoreService.js";
 import { ownerStoreImageService } from "../../../api/owner/ownerStoreImageService.js";
+import KakaoAddressMap from "../../../components/KakaoAddressMap.jsx";
 import styles from "../../../styles/ownerStoreEdit.module.css";
 import KakaoAddressMap from "../../../components/owner/KaKaoAddressMap.jsx";
 import AddressSearchModal from "../../../components/owner/AddressSearchModal.jsx";
@@ -419,13 +420,12 @@ export default function OwnerStoreEditPage() {
             )}
           </SectionCard>
 
-          {/* 주소 */}
-          <SectionCard title="주소" editing={editing.address} onEdit={() => toggleEdit("address")}>
+        <SectionCard title="주소" editing={editing.address} onEdit={() => toggleEdit("address")}>
             {!editing.address ? (
               <>
                 <div className={styles.readValue}>{store.storeAddress || "-"}</div>
 
-                {/* ✅ 조회 모드에서도 지도는 항상 보여주기 */}
+                {/* 조회 모드에서도 지도는 항상 보여주기 */}
                 <div className={styles.mapBox}>
                   <KakaoAddressMap
                     address={store.storeAddress || ""}
@@ -469,7 +469,7 @@ export default function OwnerStoreEditPage() {
                   </button>
                 </div>
 
-                {/* ✅ 수정 모드에서는 draft 기준으로 지도 표시 */}
+                {/*  수정 모드에서는 draft 기준으로 지도 표시 */}
                 <div className={styles.mapBox}>
                   <KakaoAddressMap
                     address={draft.storeAddress || ""}
